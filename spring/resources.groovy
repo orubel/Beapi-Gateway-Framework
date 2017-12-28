@@ -1,0 +1,5 @@
+
+
+beans = {
+    tokenStorageService(ApiTokenStorageService)
+}

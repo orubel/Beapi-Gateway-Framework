@@ -1,0 +1,175 @@
+buildscript {
+    ext {
+        //grailsVersion = '3.1.9'
+        grailsVersion = project.grailsVersion
+    }
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven { url "https://repo.grails.org/grails/core" }
+        jcenter()
+    }
+    dependencies {
+        classpath group: 'org.codehaus.gpars', name: 'gpars', version: '1.2.1'
+        classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+        //classpath 'org.grails.plugins:hibernate:4.3.10.6'
+        classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    }
+}
+
+plugins {
+    //id "io.spring.dependency-management" version "0.5.2.RELEASE"
+    id "io.spring.dependency-management" version "0.6.0.RELEASE"
+    id "com.jfrog.bintray" version "1.2"
+}
+
+version "0.9.3"
+group "org.grails.plugins"
+
+
+apply plugin: "maven-publish"
+apply plugin: "org.springframework.boot"
+apply plugin: "com.jfrog.bintray"
+//apply plugin: "org.grails.grails-plugin"
+// Used for publishing to central repository, remove if not needed
+apply plugin: "org.grails.grails-plugin-publish"
+apply plugin: "org.grails.grails-plugin"
+
+
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'plugins'
+        name = 'api-framework'
+        userOrg = 'beapi'
+        licenses = ['AFL-3.0']
+        vcsUrl = 'https://github.com/orubel/Beapi-API-Framework.git'
+        version {
+            name = '3.1'
+            desc = '3.1 STABLE'
+            released = new Date()
+        }
+        filesSpec {
+            from 'build/libs'
+            into 'standalone_files/level1'
+        }
+    }
+}
+
+grailsPublish {
+    userOrg = 'nosegrind' // Optional
+    githubSlug = 'orubel/api-framework'
+    license {
+        name = 'AFL-3.0'
+    }
+    title = "BeAPI API Framework"
+    desc = "BeAPI API Framework is a fully reactive plug-n-play API Framework for Distributed Architectures providing api abstraction, cached IO state, automated batching and more. It is meant to autmoate alot of the issues behind setting up and maintaining API's in distributed architectures as well as handling and simplifying automation."
+    developers = [orubel:"Owen Rubel"]
+}
+
+//ext {
+//    grailsVersion = project.grailsVersion
+//    gradleWrapperVersion = project.gradleWrapperVersion
+//}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://repo.grails.org/grails/core" }
+    jcenter()
+}
+
+//dependencyManagement {
+//    imports {
+//        mavenBom "org.grails:grails-bom:$grailsVersion"
+//    }
+//    applyMavenExclusions false
+//}
+
+dependencies {
+    compile 'org.grails.plugins:cache:4.0.0'
+    //compile 'org.grails.plugins:cache:3.0.2'
+    //compile 'org.springframework.boot:spring-boot-starter-logging'
+    compile 'org.springframework.boot:spring-boot-autoconfigure'
+    provided 'org.springframework.boot:spring-boot-starter-tomcat'
+
+
+    compile "org.grails:grails-logging"
+
+    compile "org.grails:grails-plugin-databinding"
+    compile "org.grails:grails-plugin-i18n"
+    compile "org.grails:grails-plugin-services"
+    compile "org.grails:grails-plugin-url-mappings"
+    compile "org.grails:grails-plugin-interceptors"
+
+    compile('org.grails.plugins:spring-security-core:3.2.0.M1') {
+        exclude(module: 'org.springframework.security:spring-security-web')
+    }
+
+    compile('org.grails.plugins:spring-security-rest:2.0.0.M2') {
+        exclude(module: 'com.google.guava:guava-io')
+        exclude(module: 'org.springframework.security:spring-security-web')
+        exclude(module: 'org.grails.plugins:spring-security-core')
+    }
+
+    runtime('org.grails:grails-web') {
+        exclude(module: 'org.grails:grails-web-jsp')
+        exclude(module: 'org.grails:grails-web-sitemesh')
+        exclude(module: 'org.grails:grails-web-gsp')
+        exclude(module: 'org.grails:grails-web-databinding:5.0.1')
+    }
+
+    //compile('org.grails:grails-dependencies'){
+    //    exclude(module:'grails-plugin-rest')
+    //    exclude(module:'grails-bootstrap')
+    //    exclude(module:'grails-plugin-gsp')
+    //}
+
+    // UNCOMMENT NOSQL DB AS NEEDED FOR LIBRARIES
+    //compile 'org.grails.plugins:mongodb:5.0.2'
+
+    compile 'org.grails.plugins:converters:3.3.1'
+    compile "org.grails.plugins:events"
+    compile 'org.codehaus.gpars:gpars:1.2.1', {
+        exclude group:'org.multiverse', module:'multiverse-core'
+        exclude group:'org.codehaus.groovy', module: 'groovy-all'
+    }
+
+    compile('org.grails:grails-logging:3.1.1')
+    compile("org.codehaus.groovy:groovy-ant:$groovyVersion")
+
+    //compile "org.grails.plugins:hibernate"
+
+    compile "org.grails.plugins:hibernate5"
+    compile "org.hibernate:hibernate-core:5.1.5.Final"
+    compile "org.hibernate:hibernate-ehcache:5.1.5.Final"
+    //compile 'org.grails.plugins:hibernate:4.3.10.6'
+    //compile "org.hibernate:hibernate-ehcache"
+
+    //runtime "org.apache.tomcat:tomcat-jdbc"
+
+    testCompile "org.grails:grails-gorm-testing-support"
+    //testCompile "org.grails:grails-plugin-testing"
+    //testCompile "org.grails.plugins:geb"
+    //testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
+    testCompile "org.grails:grails-web-testing-support"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = gradleWrapperVersion
+}
+
+bootRun {
+    systemProperties = System.properties
+}
+
+test {
+    systemProperties = System.properties
+}
